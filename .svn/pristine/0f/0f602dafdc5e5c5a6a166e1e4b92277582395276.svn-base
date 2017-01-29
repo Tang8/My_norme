@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * @param $pattern
+ * @param int $flags
+ * @return array
+ */
+function glob_recursive($pattern, $flags = 0)
+{
+    $output = glob($pattern, $flags);
+
+    foreach (glob(dirname($pattern) . '/*', GLOB_ONLYDIR|GLOB_NOSORT) as $dir)
+    {
+        $output = array_merge($output, glob_recursive($dir . '/' . basename($pattern), $flags));
+    }
+
+    return $output;
+}

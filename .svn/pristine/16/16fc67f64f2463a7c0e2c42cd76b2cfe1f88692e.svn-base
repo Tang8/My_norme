@@ -1,0 +1,12 @@
+<?php
+# @Author: tang_g/phetsi_w
+# @Date:   2017-01-03T16:32:42+01:00
+# @Filename: friteuse.php
+# @Last modified by:   tang_g_phetsi_w
+# @Last modified time: 2017-01-03T16:46:59+01:00
+
+require_once('engine/initiator.php');
+require_once('engine/checker.php');
+
+$files = files_get($argv);
+files_scan($files);

@@ -1,0 +1,157 @@
+<?php
+# @Author: tang_g
+# @Date:   2017-01-03T16:32:42+01:00
+# @Filename: rules_sequential.php
+# @Last modified by:   tang_g_phetsi_w
+# @Last modified time: 2017-01-03T16:53:07+01:00
+
+
+
+
+/**
+ * @param $data
+ * @param $index
+ * @return bool
+ */
+function lengthLimit($data, $index)
+{
+    $output = true;
+
+    if (preg_match("/[\w\s\W]{81,}/", $data[$index]))
+    {
+        echo "[\e[91m   SCAN   \e[0m] Error: line " . ($index + 1) . ": Length limit at 80 per line.\n";
+        $output = false;
+    }
+
+    return $output;
+}
+
+/**
+ * @param $data
+ * @param $index
+ * @return bool
+ */
+function doubleCariage($data, $index)
+{
+    $output = true;
+
+    if (preg_match("/^\n/", $data[$index]) && preg_match("/^\n/", $data[$index + 1]))
+    {
+        echo "[\e[91m   SCAN   \e[0m] Error: line " . ($index + 1) . ": Double cariage.\n";
+        $output = false;
+    }
+
+    return $output;
+}
+
+/**
+ * @param $data
+ * @param $index
+ * @return bool
+ */
+function endOfLineSpace($data, $index)
+{
+    $output = true;
+
+    if (preg_match("/(\w|\W){1} $/", $data[$index]))
+    {
+        echo "[\e[91m   SCAN   \e[0m] Error: line " . ($index + 1) . ": Space at end of line.\n";
+        $output = false;
+    }
+
+    return $output;
+}
+
+/**
+ * @param $data
+ * @param $index
+ * @return bool
+ */
+function declarationNoAssignment($data, $index)
+{
+    $output = true;
+
+    if (preg_match("/(\w) \w{1,};( |\S)/", $data[$index]))
+    {
+        echo "[\e[91m   SCAN   \e[0m] Error: line " . ($index + 1) . ": Declaration and assignment in same time are prohibited.\n";
+        $output = false;
+    }
+
+    return $output;
+}
+
+/**
+ * @param $data
+ * @param $index
+ * @return bool
+ */
+function keywordSpace($data, $index)
+{
+    $output = true;
+
+    if (preg_match("/([a-zA-Z]+(=|\(|,\w))|(=([a-zA-Z0-9]+|\d))|(char|int|float)(\w|\d)/", $data[$index]))
+    {
+        echo "[\e[91m   SCAN   \e[0m] Error: line " . ($index + 1) . ": Single space between type keyword and rest.\n";
+        $output = false;
+    }
+
+    return $output;
+}
+
+/**
+ * @param $data
+ * @param $index
+ * @return bool
+ */
+function parameterNumber($data, $index)
+{
+    $output = true;
+
+    if (preg_match("/[a-zA-Z0-9]+ [a-zA-Z0-9|\S]+\(.*\)/", $data[$index]))
+    {
+        echo "[\e[91m   SCAN   \e[0m] Error: line " . ($index + 1) . ": Parameter limit exceeded.\n";
+        $output = false;
+    }
+
+    return $output;
+}
+
+/**
+ * @param $data
+ * @param $index
+ * @return bool
+ */
+function tabulationForgotten($data, $index)
+{
+    $output = true;
+    if (preg_match("/\s{1,}(int|float|char|double) .*;/", $data[$index]))
+    {
+        if (preg_match("/\s{1,}(int|float|char|double)\s{1,}.*;/", $data[$index]))
+        {
+            $cpt = $index + 1;
+            if ((!preg_match("/\s{1,}(int|float|char|double)\s{1,}.*;/", $data[$cpt])) || (!preg_match("/\s/", $data[$cpt])))
+            {
+                echo "[\e[31m SCAN \e[0m] Error: line " . ($index + 1) . ": Tabulation forgotten.\n";
+                echo "[\e[31m SCAN \e[0m] Error: line " . ($cpt + 1) . ": Back Line forgotten.\n";
+                $output = false;
+            }
+            else
+            {
+                echo "[\e[31m SCAN \e[0m] Error: line " . ($index + 1) . ": Tabulation forgotten.\n";
+                $output = false;
+            }
+        }
+    }
+    return $output;
+}
+
+function tabulationForgottenFunction($data, $index)
+{
+  $output = true;
+  if (preg_match("/[a-zA-Z0-9]+ ([a-zA-z0-9]+|\W)\(/", $data[$index]))
+  {
+      echo "[\e[31m SCAN \e[0m] Error: line " . ($index + 1) . ": Tabulation forgotten.\n";
+      $output = false;
+  }
+  return $output;
+}

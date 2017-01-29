@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * @param $data
+ * @return bool
+ */
+function functionNumber($data)
+{
+    $output = true;
+
+    preg_match_all("/([a-zA-Z]+ [a-zA-Z0-9]+\()/", $data, $function_number);
+
+    if (count($function_number[1]) > 5)
+    {
+        echo "[\e[91m   SCAN   \e[0m] Error: Number of function exceeded 5 per file.\n";
+        $output = false;
+    }
+
+    return $output;
+}
+
+/**
+ * @param $data
+ * @return bool
+ */
+function headerForgotten($data)
+{
+    $output = true;
+    $path = basename(dirname(__FILE__));
+
+    if (!preg_match_all("/" . $path . "/", $data))
+    {
+        echo "[\e[91m   SCAN   \e[0m] Error: No valid header.\n";
+        $output = false;
+    }
+
+    return $output;
+}

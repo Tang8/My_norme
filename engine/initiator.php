@@ -1,0 +1,57 @@
+<?php
+# @Author: tang_g/phetsi_w
+# @Date:   2017-01-03T16:32:42+01:00
+# @Filename: initiator.php
+# @Last modified by:   tang_g_phetsi_w
+# @Last modified time: 2017-01-03T16:44:10+01:00
+
+require('helpers.php');
+require_once('checker.php');
+
+/**
+ * @param $directory
+ * @return null
+ */
+function files_get($directory) {
+    $output = null;
+
+    for ($i = 1; $i < count($directory); $i++) {
+        if (is_dir($directory[$i])) {
+            foreach(glob_recursive($directory[$i] . "/*.c") as $filename) {
+                $output[$filename] = file($filename);
+            }
+        } else {
+            echo "[\e[91mSearch\e[0m] Error: " . $directory[$i] . ": No such directory.\n";
+        }
+    }
+
+    return $output;
+}
+
+/**
+ * @param $files
+ */
+function files_scan($files) {
+    if ($files) {
+        foreach($files as $key => $file) {
+            $curses = 0;
+            echo "[   INFO   ] BEGIN: " . basename($key) . ": Scanning begin.\n";
+            echo "[   INFO   ] LINE:  " . basename($key) . ":\n";
+            $curses += checker_sequential($file);
+            if ($curses === 0) {
+                echo "[\e[92m    OK    \e[0m] LINE:  " . basename($key) . ": Clean. \n";
+            }
+            echo "[   INFO   ] ALL:   " . basename($key) . ":\n";
+            $curses += checker_full($file);
+            if ($curses === 0) {
+                echo "[\e[92m  PASSED  \e[0m] ALL:    " . basename($key) . ": Clean. \n";
+            }
+            if ($curses === 0) {
+                echo "[\e[92m  PASSED  \e[0m] END:   " . basename($key) . ": Clean. \n";
+            } else {
+                echo "[\e[91m  FAILED  \e[0m] END:   " . basename($key) . ": " . $curses . " mistake" . ($curses === 1 ? "" : "s") . ". \n";
+            }
+            echo "\n";
+        }
+    }
+}
